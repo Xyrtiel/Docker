@@ -23,6 +23,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - DB_HOST=db
+      - DB_PORT=5432              
       - DB_USER=postgres
       - DB_PASSWORD=mysecretpassword
 

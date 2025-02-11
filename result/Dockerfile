@@ -1,20 +1,16 @@
-# Utiliser une image officielle Node.js Alpine
 FROM node:18-alpine
 
 # Définir le répertoire de travail
-WORKDIR /app
+WORKDIR /result
 
-# Copier package.json et package-lock.json
-COPY package.json .
-
-# Installer les dépendances
-RUN npm install --omit=dev
-
-# Copier le code source (exclure node_modules avec .dockerignore)
+# Copier les fichiers de l'application
 COPY . .
 
-# Exposer le port 80
-EXPOSE 80
+# Installer les dépendances
+RUN npm install
 
-# Lancer l'application
-CMD ["node", "app.js"]
+# Exposer le port pour le serveur Express
+EXPOSE 3000
+
+# Démarrer l'application Node.js
+CMD ["node", "server.js"]
