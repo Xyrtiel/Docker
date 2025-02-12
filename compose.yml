@@ -7,6 +7,7 @@ services:
       - "5000:80"
     networks:
       - back-tier
+      - poll-tier
     depends_on:
       redis:
         condition: service_started
@@ -21,30 +22,33 @@ services:
       - "6379:6379"
     networks:
       - back-tier
+      - poll-tier
 
   worker:
     build: ./worker
     networks:
       - back-tier
+      - poll-tier
+      - result-tier
     depends_on:
       db:
-        condition: service_healthy  # ✅ Attend que PostgreSQL soit prêt
+        condition: service_healthy
       redis:
         condition: service_started
     env_file:
       - .env  
-    command: [ "sh", "-c", "sleep 10 && java -jar worker-jar-with-dependencies.jar" ]  # ✅ Attente prolongée pour éviter les erreurs de connexion
 
   db:
     image: postgres:15-alpine
     networks:
       - back-tier
+      - result-tier
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql  # ✅ Assure l'exécution du script SQL au démarrage
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql  
     env_file:
       - .env  
-    healthcheck:  # ✅ Vérifie si PostgreSQL est prêt avant de démarrer les autres services
+    healthcheck: 
       test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 5s
       timeout: 3s
@@ -56,15 +60,17 @@ services:
       - "5001:80"
     networks:
       - back-tier
+      - result-tier
     depends_on:
       db:
-        condition: service_healthy  # ✅ Attend que PostgreSQL soit prêt
+        condition: service_healthy
     env_file:
       - .env  
-    command: [ "sh", "-c", "sleep 10 && node server.js" ]  # ✅ Attente prolongée pour éviter les erreurs de connexion
 
 volumes:
   db-data:
 
 networks:
   back-tier:
+  poll-tier:
+  result-tier:
