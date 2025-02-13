@@ -6,7 +6,6 @@ services:
     ports:
       - "5000:80"
     networks:
-      - back-tier
       - poll-tier
     depends_on:
       redis:
@@ -21,14 +20,12 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - back-tier
       - poll-tier
+    restart: always
 
   worker:
     build: ./worker
     networks:
-      - back-tier
-      - poll-tier
       - result-tier
     depends_on:
       db:
@@ -41,7 +38,6 @@ services:
   db:
     image: postgres:15-alpine
     networks:
-      - back-tier
       - result-tier
     volumes:
       - db-data:/var/lib/postgresql/data
@@ -53,13 +49,13 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    restart: always
 
   result:
     build: ./result
     ports:
       - "5001:80"
     networks:
-      - back-tier
       - result-tier
     depends_on:
       db:
@@ -71,6 +67,5 @@ volumes:
   db-data:
 
 networks:
-  back-tier:
   poll-tier:
   result-tier:
