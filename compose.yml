@@ -6,8 +6,7 @@ services:
     ports:
       - "5000:80"
     networks:
-      - poll-tier
-      - back-tier
+      - poll-tier         # Uniquement poll-tier
     depends_on:
       redis:
         condition: service_started
@@ -29,8 +28,7 @@ services:
   worker:
     build: ./worker
     networks:
-      - result-tier
-      - back-tier
+      - back-tier        # Uniquement back-tier
     depends_on:
       db:
         condition: service_healthy
@@ -62,8 +60,7 @@ services:
     ports:
       - "5001:80"
     networks:
-      - result-tier
-      - back-tier
+      - back-tier        # Uniquement back-tier
     depends_on:
       db:
         condition: service_healthy
