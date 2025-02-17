@@ -9,7 +9,7 @@ services:
       - poll-tier
     depends_on:
       redis:
-        condition: service_started    # Suppression de la dépendance db
+        condition: service_started
     env_file:
       - .env  
     restart: always
@@ -58,8 +58,7 @@ services:
     ports:
       - "5001:80"
     networks:
-      - back-tier
-      - result-tier    # Ajout du réseau result-tier
+      - result-tier    # Uniquement result-tier
     depends_on:
       db:
         condition: service_healthy
